@@ -34,9 +34,15 @@ libraryDependencies ++= Seq(
   Cinnamon.library.cinnamonJvmMetricsProducer
 )
 
-unmanagedJars in Compile += file(
-  "netgamesim/target/scala-3.2.2/netmodelsim.jar"
-)
+// NetGameSim JAR — committed to lib/ for direct compilation (no submodule needed)
+// Falls back to submodule path if lib/ JAR is not present
+Compile / unmanagedJars ++= {
+  val libJar = file("lib/netmodelsim.jar")
+  val submoduleJar = file("netgamesim/target/scala-3.2.2/netmodelsim.jar")
+  if (libJar.exists()) Seq(libJar)
+  else if (submoduleJar.exists()) Seq(submoduleJar)
+  else Seq.empty
+}
 
 scalacOptions ++= Seq(
   "-encoding", "UTF-8",
